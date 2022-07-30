@@ -4,7 +4,7 @@ from .views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'Users', CustomUserView)
+router.register(r'DjangoUsers', DjangoUserView)
 router.register(r'Tasks', TaskView)
 router.register(r'Comments', TaskCommentView)
 router.register(r'Images', TaskImageView)

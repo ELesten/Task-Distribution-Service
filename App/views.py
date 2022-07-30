@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from .models import *
 from rest_framework import status
 from .serializer import *
+from django.contrib.auth.models import User
 
 
 # class Registration(APIView):
@@ -19,9 +20,10 @@ from .serializer import *
 #             return Response(serializer.data, status=status.HTTP_200_OK)
 #         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-class CustomUserView(ModelViewSet):
-    serializer_class = UserSerializer
-    queryset = CustomUser.objects.all()
+
+class DjangoUserView(ModelViewSet):
+    serializer_class = DjangoUserSerializer
+    queryset = User.objects.all()
 
 
 class TaskView(ModelViewSet):

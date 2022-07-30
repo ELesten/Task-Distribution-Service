@@ -28,31 +28,35 @@ class TaskStatus(models.TextChoices):
 ## MODELS ##
 
 
-class CustomUser(models.Model):
-    name = models.CharField(max_length=255, blank=True)
-    surname = models.CharField(max_length=255, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE) #?
-    worker_status = models.CharField(max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH)
-    role = models.CharField(max_length=7, choices=Role.choices, default=Role.WORKER)
-
-    def __str__(self):
-        return self.name
+# class CustomUser(models.Model):
+#     name = models.CharField(max_length=255, blank=True)
+#     surname = models.CharField(max_length=255, blank=True)
+#     user = models.OneToOneField(User, on_delete=models.CASCADE) #?
+#     worker_status = models.CharField(max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH)
+#     role = models.CharField(max_length=7, choices=Role.choices, default=Role.WORKER)
+#
+#     def __str__(self):
+#         return self.name
 
 
 class Team(models.Model):
     team_name = models.CharField(max_length=255)
 
-    workers = models.ManyToManyField(CustomUser, related_name='team_workers', limit_choices_to={
+    workers = models.ManyToManyField(User, related_name='team_workers', limit_choices_to={
         "worker_status": UserStatus.BENCH,
         "role": Role.WORKER,
     },
+                                     null=True,
                                      blank=True)
 
-    managers = models.ManyToManyField(CustomUser, related_name='team_managers', limit_choices_to={
+    managers = models.ManyToManyField(User, related_name='team_managers', limit_choices_to={
         "role": Role.MANAGER,
     },
+                                      null=True,
                                       blank=True)
 
+    def __str__(self):
+        return self.team_name
     # secret_token_key
 
 
@@ -69,7 +73,7 @@ class Task(models.Model):
     task_status = models.CharField(max_length=26, choices=TaskStatus.choices, default=TaskStatus.BACKLOG)
     image = models.ManyToManyField(TaskImage)
     responsible_team = models.ForeignKey(Team, related_name='tasks_team', on_delete=models.CASCADE)
-    responsible_employee = models.ForeignKey(CustomUser, related_name='task_employee', blank=True, on_delete=models.CASCADE)
+    responsible_employee = models.ForeignKey(User, related_name='task_employee', blank=True, on_delete=models.CASCADE)
 
     @property
     def comments_count(self):
@@ -78,5 +82,5 @@ class Task(models.Model):
 
 class TaskComment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='TaskComments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='TaskComments')
     text = models.TextField(max_length=2550)

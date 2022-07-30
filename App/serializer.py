@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth.models import User
 
 
 # class TestSer(serializers.Serializer):
@@ -10,11 +11,10 @@ from .models import *
 #     role = CustomUser.role
 #     def create(self, validated_data):
 
-
-class UserSerializer(serializers.ModelSerializer):
+class DjangoUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ['name', 'surname']
+        model = User
+        fields = ['username', 'password', 'first_name', 'last_name', 'email', 'role']
 
 
 class TaskSerializer(serializers.ModelSerializer):
