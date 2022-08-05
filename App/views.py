@@ -7,20 +7,6 @@ from .serializer import *
 from .models import CustomUser
 
 
-# class Registration(APIView):
-#     http_method_names = ['get', 'post']
-#
-#     def get(self, request):
-#         return Response('OK')
-#
-#     def post(self, request):
-#         serializer = TestSer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-
-
 class DjangoUserView(ModelViewSet):
     serializer_class = DjangoUserSerializer
     queryset = CustomUser.objects.all()
@@ -33,7 +19,7 @@ class TaskView(ModelViewSet):
 
 class TaskCommentView(ModelViewSet):
     serializer_class = TaskCommentSerializer
-    queryset = Task.objects.all()
+    queryset = TaskComment.objects.all()
 
 
 class TaskImageView(ModelViewSet):
@@ -42,5 +28,5 @@ class TaskImageView(ModelViewSet):
 
 
 class TeamView(ModelViewSet):
-    serializer_class = TeamViewSerializer
+    serializer_class = TeamSerializer
     queryset = Team.objects.all()
