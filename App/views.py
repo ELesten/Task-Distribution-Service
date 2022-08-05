@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from .models import *
 from rest_framework import status
 from .serializer import *
-from django.contrib.auth.models import User
+from .models import CustomUser
 
 
 # class Registration(APIView):
@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 
 class DjangoUserView(ModelViewSet):
     serializer_class = DjangoUserSerializer
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
 
 class TaskView(ModelViewSet):

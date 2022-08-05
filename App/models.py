@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 
 ## CHOICES ##
@@ -27,36 +27,51 @@ class TaskStatus(models.TextChoices):
 
 ## MODELS ##
 
+class CustomUser(AbstractUser):
+    status = models.CharField(max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH)
+    role = models.CharField(max_length=7, choices=Role.choices, default=Role.WORKER)
+    team = models.ForeignKey('Team', on_delete=models.SET_NULL, related_name='team_members', null=True, blank=True)
 
-# class CustomUser(models.Model):
-#     name = models.CharField(max_length=255, blank=True)
-#     surname = models.CharField(max_length=255, blank=True)
-#     user = models.OneToOneField(User, on_delete=models.CASCADE) #?
-#     worker_status = models.CharField(max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH)
-#     role = models.CharField(max_length=7, choices=Role.choices, default=Role.WORKER)
-#
-#     def __str__(self):
-#         return self.name
+    def set_status(self):
+        in_team = bool(self.team)
+        fired = self.status == UserStatus.FIRED
+        if fired:
+            self.team = None
+            return
+        statuses = {
+            True: UserStatus.IN_TEAM,
+            False: UserStatus.BENCH
+        }
+        self.status = statuses[in_team]
+
+    def save(self, *args, **kwargs):
+        self.set_status()
+        return super().save(*args, **kwargs)
+
+    class Meta(AbstractUser.Meta):
+        swappable = "AUTH_USER_MODEL"
 
 
 class Team(models.Model):
     team_name = models.CharField(max_length=255)
 
-    workers = models.ManyToManyField(User, related_name='team_workers', limit_choices_to={
-        "worker_status": UserStatus.BENCH,
-        "role": Role.WORKER,
-    },
-                                     null=True,
-                                     blank=True)
+    # workers = models.ManyToManyField(CustomUser, related_name='team_workers', limit_choices_to={
+    #     "worker_status": UserStatus.BENCH,
+    #     "role": Role.WORKER,
+    # },
+    #                                  null=True,
+    #                                  blank=True)
 
-    managers = models.ManyToManyField(User, related_name='team_managers', limit_choices_to={
-        "role": Role.MANAGER,
-    },
-                                      null=True,
-                                      blank=True)
+    managers = models.ForeignKey(CustomUser, related_name='team_managers', limit_choices_to={"role": Role.MANAGER},
+                                 null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.team_name
+
+    @property
+    def workers_count(self):
+        return self.team_members.count()
+
     # secret_token_key
 
 
@@ -73,7 +88,7 @@ class Task(models.Model):
     task_status = models.CharField(max_length=26, choices=TaskStatus.choices, default=TaskStatus.BACKLOG)
     image = models.ManyToManyField(TaskImage)
     responsible_team = models.ForeignKey(Team, related_name='tasks_team', on_delete=models.CASCADE)
-    responsible_employee = models.ForeignKey(User, related_name='task_employee', blank=True, on_delete=models.CASCADE)
+    responsible_employee = models.ForeignKey(CustomUser, related_name='task_employee', blank=True, on_delete=models.CASCADE)
 
     @property
     def comments_count(self):
@@ -82,5 +97,5 @@ class Task(models.Model):
 
 class TaskComment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='TaskComments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='TaskComments')
     text = models.TextField(max_length=2550)
