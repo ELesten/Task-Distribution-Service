@@ -76,19 +76,21 @@ class Team(models.Model):
 
 
 class TaskImage(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(upload_to='imgs')
 
 
 class Task(models.Model):
     task_name = models.CharField(max_length=255)
     description = models.TextField()
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='TaskAuthor')
     connection_with_another_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField()
     task_status = models.CharField(max_length=26, choices=TaskStatus.choices, default=TaskStatus.BACKLOG)
-    image = models.ManyToManyField(TaskImage)
+    image = models.ManyToManyField(TaskImage, blank=True)
     responsible_team = models.ForeignKey(Team, related_name='tasks_team', on_delete=models.CASCADE)
-    responsible_employee = models.ForeignKey(CustomUser, related_name='task_employee', blank=True, on_delete=models.CASCADE)
+    responsible_employee = models.ForeignKey(CustomUser, related_name='task_employee', null=True, blank=True,
+                                             on_delete=models.CASCADE)
 
     @property
     def comments_count(self):
@@ -100,8 +102,8 @@ class Task(models.Model):
 
 class TaskComment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='TaskComments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='CommentAuthor')
     text = models.TextField(max_length=2550)
 
     def __str__(self):
-        return self.task
+        return f'Comment to {self.task.task_name}'

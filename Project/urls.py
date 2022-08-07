@@ -21,7 +21,7 @@ from App.views import AllTasks
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(routes)),
-    # path('api/auth/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls')),
     re_path('^auth/', include('djoser.urls.authtoken')),
-    path('Tasks/', AllTasks.as_view())
+    path('Tasks/', AllTasks.as_view()),
 ]

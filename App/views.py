@@ -13,6 +13,7 @@ from .models import CustomUser
 
 class AllTasks(APIView):
     permission_classes = (IsAuthenticated, )
+
     def get(self, request):
         role = request.user.role
         if role == 'Worker':
