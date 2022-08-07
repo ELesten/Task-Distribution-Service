@@ -11,4 +11,5 @@ router.register(r'Images', TaskImageView)
 router.register(r'Teams', TeamView)
 urlpatterns = [
     path('', include(router.urls)),
+    path('drf-auth/', include('rest_framework.urls')),
 ]
