@@ -1,10 +1,26 @@
+import json
+
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
+from rest_framework import generics
 from .models import *
 from rest_framework import status
 from .serializer import *
 from .models import CustomUser
+
+
+class AllTasks(APIView):
+    permission_classes = (IsAuthenticated, )
+    def get(self, request):
+        role = request.user.role
+        if role == 'Worker':
+            team_id = request.user.team
+            result = Task.objects.filter(responsible_team=team_id).values() #Для воркеров
+        else:
+            result = Task.objects.all().values() #Для манагеров(додумать)
+        return Response(result)
 
 
 class DjangoUserView(ModelViewSet):
@@ -13,6 +29,7 @@ class DjangoUserView(ModelViewSet):
 
 
 class TaskView(ModelViewSet):
+    permission_classes = (IsAuthenticated, )
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
 

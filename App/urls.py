@@ -10,7 +10,5 @@ router.register(r'Comments', TaskCommentView)
 router.register(r'Images', TaskImageView)
 router.register(r'Teams', TeamView)
 urlpatterns = [
-    # path('register/', Registration.as_view()),
     path('', include(router.urls)),
-
 ]

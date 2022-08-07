@@ -94,8 +94,14 @@ class Task(models.Model):
     def comments_count(self):
         return self.comments.count()
 
+    def __str__(self):
+        return self.task_name
+
 
 class TaskComment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='TaskComments')
     text = models.TextField(max_length=2550)
+
+    def __str__(self):
+        return self.task

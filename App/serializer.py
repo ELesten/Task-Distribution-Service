@@ -6,7 +6,7 @@ from .models import CustomUser
 class DjangoUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ('username', 'password', 'first_name', 'last_name', 'email')
 
 
 class TaskSerializer(serializers.ModelSerializer):
