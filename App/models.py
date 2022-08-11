@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
 class Team(models.Model):
     team_name = models.CharField(max_length=255)
 
-    # workers = models.ManyToManyField(CustomUser, related_name='team_workers', limit_choices_to={
+    # workers = models.ForeignKey(CustomUser, related_name='team_workers', limit_choices_to={
     #     "worker_status": UserStatus.BENCH,
     #     "role": Role.WORKER,
     # },

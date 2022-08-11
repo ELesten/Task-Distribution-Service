@@ -3,13 +3,19 @@ from .models import *
 from .models import CustomUser
 
 
-class DjangoUserSerializer(serializers.ModelSerializer):
+class DjangoUserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'last_name')
+
+
+class DjangoUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'password', 'first_name', 'last_name', 'email')
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.HyperlinkedModelSerializer):
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:

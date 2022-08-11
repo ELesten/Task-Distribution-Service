@@ -16,12 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from App.router import routes
-from App.views import AllTasks
+from App.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(routes)),
-    path('api/auth/', include('djoser.urls')),
     re_path('^auth/', include('djoser.urls.authtoken')),
-    path('Tasks/', AllTasks.as_view()),
+    path('Tasks/', TasksAPIView.as_view()),
 ]
