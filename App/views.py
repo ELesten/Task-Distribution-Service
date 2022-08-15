@@ -7,24 +7,13 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .models import *
 from rest_framework import status
+
+from .permissions import IsAdminOrManagerOrReadOnly, IsAdmin, IsAdminOrManager
 from .serializer import *
 from .models import CustomUser
 
 
-class TasksAPIView(APIView):
-    permission_classes = (IsAuthenticated, )
-
-    def get(self, request):
-        role = request.user.role
-        if role == 'Worker':
-            team_id = request.user.team
-            result = Task.objects.filter(responsible_team=team_id).values()
-        else:
-            result = Task.objects.all().values() #Для манагеров(додумать)
-        return Response(result)
-
-
-class UsersDetailAPIView(APIView):
+class UserUpdateAPIView(APIView):
     """
     Getting and changing an authorized user.
     """
@@ -43,19 +32,57 @@ class UsersDetailAPIView(APIView):
         return Response(serializer.data)
 
 
+class UserTeamChanging(APIView):
+    """
+    Add and delete members to the team
+    """
+    permission_classes = (IsAdminOrManager,)
+    serializer_class = DjangoUsersTeamSerializer
+
+    def get(self, request, pk):
+        result = CustomUser.objects.all().values("username", "team")
+        return Response(result)
+
+    def patch(self, request, pk):
+        instance = get_object_or_404(CustomUser, id=pk)
+        serializer = self.serializer_class(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class TaskAPIView(APIView):
+    """
+    Creating and receiving tasks
+    """
+    permission_classes = (IsAuthenticated, IsAdminOrManagerOrReadOnly, )
+    serializer_class = TaskSerializer
+
+    def get(self, request):
+        role = request.user.role
+        if role == 'Worker':
+            result = Task.objects.filter(responsible_team=request.user.team).values()
+        elif role == 'Manager':
+            team_id = request.user.managed_teams.values('id')
+            result = Task.objects.all().filter(responsible_team__in=team_id).values()
+        else:
+            result = Task.objects.all().values()
+        return Response(result)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
 class TeamView(ModelViewSet):
+    """
+    Full CRUD on teams for admin
+    """
+    permission_classes = (IsAuthenticated, IsAdmin)
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
-
-# class DjangoUserView(ModelViewSet):
-#     serializer_class = DjangoUserSerializer
-#     queryset = CustomUser.objects.all()
-
-
-class TaskView(ModelViewSet):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = TaskSerializer
-    queryset = Task.objects.all()
 
 
 class TaskCommentView(ModelViewSet):

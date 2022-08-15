@@ -22,5 +22,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(routes)),
     re_path('^auth/', include('djoser.urls.authtoken')),
-    path('Tasks/', TasksAPIView.as_view()),
 ]

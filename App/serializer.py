@@ -9,13 +9,19 @@ class DjangoUserDetailSerializer(serializers.ModelSerializer):
         fields = ('first_name', 'last_name')
 
 
-class DjangoUserSerializer(serializers.HyperlinkedModelSerializer):
+class DjangoUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'password', 'first_name', 'last_name', 'email')
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class DjangoUsersTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('team', )
+
+
+class TaskSerializer(serializers.ModelSerializer):
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
