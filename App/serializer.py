@@ -1,15 +1,28 @@
 from rest_framework import serializers
 from .models import *
-from .models import CustomUser
+
+
+class DjangoUserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'last_name')
 
 
 class DjangoUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ('username', 'password', 'first_name', 'last_name', 'email')
+
+
+class DjangoUsersTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('team', )
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Task
         fields = '__all__'
