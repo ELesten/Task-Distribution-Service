@@ -1,13 +1,9 @@
-from django.http import HttpResponse
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
-from rest_framework import generics
-from .models import *
 from rest_framework import status
-
 from .permissions import IsAdminOrManagerOrReadOnly, IsAdmin, IsAdminOrManager
 from .serializer import *
 from .models import CustomUser
@@ -22,33 +18,47 @@ class UserUpdateAPIView(APIView):
 
     def get(self, request):
         serializer = self.serializer_class(get_object_or_404(CustomUser, id=request.user.id))
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request):
         instance = get_object_or_404(CustomUser, id=request.user.id)
         serializer = self.serializer_class(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserTeamChanging(APIView):
+class UsersList(APIView):
+    """
+     List of all users
+    """
+    permission_classes = (IsAuthenticated, IsAdminOrManager)
+
+    def get(self, request):
+        result = CustomUser.objects.all()
+        return Response(result.values("username", "team", "id"), status=status.HTTP_200_OK)
+
+
+class ChangeUserTeam(APIView):
     """
     Add and delete members to the team
     """
-    permission_classes = (IsAdminOrManager,)
+    permission_classes = (IsAuthenticated, IsAdminOrManager)
     serializer_class = DjangoUsersTeamSerializer
 
     def get(self, request, pk):
-        result = CustomUser.objects.all().values("username", "team")
-        return Response(result)
+        if request.user.role == "Manager":
+            serializer = self.serializer_class(get_object_or_404(CustomUser.objects.filter(role="Worker"), pk=pk))
+        else:
+            serializer = self.serializer_class(get_object_or_404(CustomUser.objects.all(), pk=pk))
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
         instance = get_object_or_404(CustomUser, id=pk)
         serializer = self.serializer_class(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TaskAPIView(APIView):
@@ -67,13 +77,13 @@ class TaskAPIView(APIView):
             result = Task.objects.all().filter(responsible_team__in=team_id).values()
         else:
             result = Task.objects.all().values()
-        return Response(result)
+        return Response(result, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(context={'request': request}, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TeamView(ModelViewSet):
