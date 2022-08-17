@@ -3,7 +3,7 @@ from .models import Team, TaskImage, Task, TaskComment, CustomUser
 
 
 class TeamAdmin(admin.ModelAdmin):
-    fields = ('team_name', 'managers')
+    fields = ("team_name", "managers")
 
 
 admin.site.register(Team, TeamAdmin)
