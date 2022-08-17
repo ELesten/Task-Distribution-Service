@@ -27,10 +27,15 @@ class TaskStatus(models.TextChoices):
 
 ## MODELS ##
 
+
 class CustomUser(AbstractUser):
-    status = models.CharField(max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH)
+    status = models.CharField(
+        max_length=7, choices=UserStatus.choices, default=UserStatus.BENCH
+    )
     role = models.CharField(max_length=7, choices=Role.choices, default=Role.WORKER)
-    team = models.ForeignKey('Team', on_delete=models.SET_NULL, related_name='workers', null=True, blank=True)
+    team = models.ForeignKey(
+        "Team", on_delete=models.SET_NULL, related_name="workers", null=True, blank=True
+    )
 
     def set_status(self):
         in_team = bool(self.team)
@@ -38,10 +43,7 @@ class CustomUser(AbstractUser):
         if fired:
             self.team = None
             return
-        statuses = {
-            True: UserStatus.IN_TEAM,
-            False: UserStatus.BENCH
-        }
+        statuses = {True: UserStatus.IN_TEAM, False: UserStatus.BENCH}
         self.status = statuses[in_team]
 
     def save(self, *args, **kwargs):
@@ -62,8 +64,12 @@ class Team(models.Model):
     #                                  null=True,
     #                                  blank=True)
 
-    managers = models.ManyToManyField(CustomUser, related_name='managed_teams', limit_choices_to={"role": Role.MANAGER},
-                                      blank=True)
+    managers = models.ManyToManyField(
+        CustomUser,
+        related_name="managed_teams",
+        limit_choices_to={"role": Role.MANAGER},
+        blank=True,
+    )
 
     def __str__(self):
         return self.team_name
@@ -76,21 +82,34 @@ class Team(models.Model):
 
 
 class TaskImage(models.Model):
-    image = models.ImageField(upload_to='images')
+    image = models.ImageField(upload_to="images")
 
 
 class Task(models.Model):
     task_name = models.CharField(max_length=255)
     description = models.TextField()
-    author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, related_name='created_tasks', null=True)
-    connection_with_another_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    author = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL, related_name="created_tasks", null=True
+    )
+    connection_with_another_task = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(blank=True)
-    task_status = models.CharField(max_length=26, choices=TaskStatus.choices, default=TaskStatus.BACKLOG)
+    task_status = models.CharField(
+        max_length=26, choices=TaskStatus.choices, default=TaskStatus.BACKLOG
+    )
     image = models.ManyToManyField(TaskImage, blank=True)
-    responsible_team = models.ForeignKey(Team, related_name='tasks', on_delete=models.CASCADE)
-    responsible_person = models.ForeignKey(CustomUser, related_name='received_tasks', null=True, blank=True,
-                                           on_delete=models.SET_NULL)
+    responsible_team = models.ForeignKey(
+        Team, related_name="tasks", on_delete=models.CASCADE
+    )
+    responsible_person = models.ForeignKey(
+        CustomUser,
+        related_name="received_tasks",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     @property
     def comments_count(self):
@@ -101,10 +120,15 @@ class Task(models.Model):
 
 
 class TaskComment(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, related_name='commented_tasks',
-                               null=True, blank=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        related_name="commented_tasks",
+        null=True,
+        blank=True,
+    )
     text = models.TextField(max_length=2550)
 
     def __str__(self):
-        return f'Comment to {self.task.task_name} by {self.author.username}'
+        return f"Comment to {self.task.task_name} by {self.author.username}"
