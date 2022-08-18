@@ -28,7 +28,6 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Team, TeamAdmin)
-admin.site.register(Team)
 admin.site.register(TaskImage)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(TaskComment)
