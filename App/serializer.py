@@ -5,19 +5,19 @@ from .models import *
 class DjangoUserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name')
+        fields = ("first_name", "last_name")
 
 
 class DjangoUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('username', 'password', 'first_name', 'last_name', 'email')
+        fields = ("username", "password", "first_name", "last_name", "email")
 
 
 class DjangoUsersTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('team', )
+        fields = ("team",)
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = "__all__"
 
 
 class TaskCommentSerializer(serializers.ModelSerializer):
@@ -33,16 +33,16 @@ class TaskCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskComment
-        fields = '__all__'
+        fields = "__all__"
 
 
 class TaskImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskImage
-        fields = '__all__'
+        fields = "__all__"
 
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = '__all__'
+        fields = "__all__"

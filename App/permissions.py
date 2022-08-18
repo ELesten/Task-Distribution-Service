@@ -19,9 +19,17 @@ class IsAdminOrManagerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return bool(request.user and request.user.role == "Admin" or request.user.role == "Manager")
+        return bool(
+            request.user
+            and request.user.role == "Admin"
+            or request.user.role == "Manager"
+        )
 
 
 class IsAdminOrManager(permissions.BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user and request.user.role == "Admin" or request.user.role == "Manager")
+        return bool(
+            request.user
+            and request.user.role == "Admin"
+            or request.user.role == "Manager"
+        )
