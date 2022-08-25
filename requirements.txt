@@ -30,3 +30,4 @@ social-auth-core==4.3.0
 sqlparse==0.4.2
 uritemplate==4.1.1
 urllib3==1.26.11
+drf-yasg==1.21.3
