@@ -56,14 +56,6 @@ class CustomUser(AbstractUser):
 
 class Team(models.Model):
     team_name = models.CharField(max_length=255)
-
-    # workers = models.ManyToManyField(CustomUser, related_name='team_workers', limit_choices_to={
-    #                                  "worker_status": UserStatus.BENCH,
-    #                                  "role": Role.WORKER,
-    #                                  },
-    #                                  null=True,
-    #                                  blank=True)
-
     managers = models.ManyToManyField(
         CustomUser,
         related_name="managed_teams",
@@ -77,8 +69,6 @@ class Team(models.Model):
     @property
     def workers_count(self):
         return self.workers.count()
-
-    # secret_token_key
 
 
 class TaskImage(models.Model):

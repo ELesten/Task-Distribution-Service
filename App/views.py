@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework import status
-from .permissions import IsAdminOrManagerOrReadOnly, IsAdmin, IsAdminOrManager
+from .permissions import *
 from .serializer import *
 from .models import CustomUser
 
@@ -50,7 +50,9 @@ class ChangeUserTeam(APIView):
     Add and delete members to the team
     """
 
-    permission_classes = (IsAuthenticated, IsAdminOrManager)
+    permission_classes = (IsAuthenticated,
+                          IsAdminOrManager
+                          )
     serializer_class = DjangoUsersTeamSerializer
 
     def get(self, request, pk):
@@ -72,34 +74,40 @@ class ChangeUserTeam(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class TaskAPIView(APIView):
+class TaskModelViewSet(ModelViewSet):
     """
-    Creating and receiving tasks
+    Full CRUD on tasks
     """
-
-    permission_classes = (
+    permission_classes = [
         IsAuthenticated,
         IsAdminOrManagerOrReadOnly,
-    )
+        ]
+    queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    filterset_fields = [
+        "responsible_team",
+        "task_status",
+        "responsible_person"
+    ]
 
-    def get(self, request):
+    def list(self, request, *args, **kwargs):
         role = request.user.role
         if role == "Worker":
-            result = Task.objects.filter(responsible_team=request.user.team).values()
+            queryset = Task.objects.filter(responsible_team=request.user.team)
         elif role == "Manager":
             team_id = request.user.managed_teams.values("id")
-            result = Task.objects.all().filter(responsible_team__in=team_id).values()
+            queryset = Task.objects.all().filter(responsible_team__in=team_id)
         else:
-            result = Task.objects.all().values()
-        return Response(result, status=status.HTTP_200_OK)
+            queryset = Task.objects.all()
 
-    def post(self, request):
-        serializer = self.serializer_class(
-            context={"request": request}, data=request.data
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        queryset = self.filter_queryset(queryset)
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
