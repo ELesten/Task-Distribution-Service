@@ -1,0 +1,254 @@
+[
+{
+    "model": "App.customuser",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$320000$5PoAkYTFutd5GzLVmK5Osh$KAyN4taXokMlVUt37Ydl/m18DQyzPvyCAUBeykVVI2s=",
+        "last_login": "2022-08-17T14:28:09.327Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:27:47.423Z",
+        "status": "Bench",
+        "role": "Worker",
+        "team": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 2,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "MarsRider",
+        "first_name": "Elon",
+        "last_name": "Mask",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:28:45Z",
+        "status": "In team",
+        "role": "Worker",
+        "team": 2,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 3,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "PopKing",
+        "first_name": "Michael",
+        "last_name": "Jackson",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:32:33Z",
+        "status": "In team",
+        "role": "Worker",
+        "team": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 4,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "QueenKiller",
+        "first_name": "Freddie",
+        "last_name": "Mercury",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:33:23Z",
+        "status": "Bench",
+        "role": "Manager",
+        "team": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 5,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "VelvetVoice",
+        "first_name": "Frank",
+        "last_name": "Sinatra",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:34:13Z",
+        "status": "Bench",
+        "role": "Manager",
+        "team": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 6,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "SOAD",
+        "first_name": "Serj",
+        "last_name": "Tankian",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:35:21Z",
+        "status": "In team",
+        "role": "Worker",
+        "team": 2,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.customuser",
+    "pk": 7,
+    "fields": {
+        "password": "QWERTY1234",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "BigElv",
+        "first_name": "Elvis",
+        "last_name": "Presley",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-08-17T14:36:31Z",
+        "status": "In team",
+        "role": "Worker",
+        "team": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "App.team",
+    "pk": 1,
+    "fields": {
+        "team_name": "Greatest of all times",
+        "managers": [
+            4,
+            5
+        ]
+    }
+},
+{
+    "model": "App.team",
+    "pk": 2,
+    "fields": {
+        "team_name": "My dream team",
+        "managers": [
+            4
+        ]
+    }
+},
+{
+    "model": "App.task",
+    "pk": 1,
+    "fields": {
+        "task_name": "Release new album",
+        "description": "New album for the newborn babies, to let them be your fans for the entire life",
+        "author": 1,
+        "connection_with_another_task": null,
+        "created_at": "2022-08-17T14:44:10.340Z",
+        "deadline": "2025-04-30T14:43:32Z",
+        "task_status": "Backlog",
+        "responsible_team": 1,
+        "responsible_person": 3,
+        "image": []
+    }
+},
+{
+    "model": "App.task",
+    "pk": 2,
+    "fields": {
+        "task_name": "Launch CyberTruck to Pluto",
+        "description": "1. Release Tesla Cyber Truck (lets check if it is possible at all...);\r\n2. Develop new rocket-modules which will be capable to reach Pluto;\r\n3. Connect 1st and 2nd part of this task and prepare everything for launch\r\n\r\n**No pain - no gain, bro =)",
+        "author": 1,
+        "connection_with_another_task": null,
+        "created_at": "2022-08-17T14:52:01.002Z",
+        "deadline": "2023-12-31T00:00:00Z",
+        "task_status": "Backlog",
+        "responsible_team": 2,
+        "responsible_person": 2,
+        "image": []
+    }
+},
+{
+    "model": "App.task",
+    "pk": 3,
+    "fields": {
+        "task_name": "Announce new Europe tour",
+        "description": "New Europe tour 2025, where you will release new songs you wrote with ex-SOAD members",
+        "author": 1,
+        "connection_with_another_task": 1,
+        "created_at": "2022-08-17T14:56:01.351Z",
+        "deadline": "2023-01-30T12:00:00Z",
+        "task_status": "Backlog",
+        "responsible_team": 2,
+        "responsible_person": 6,
+        "image": []
+    }
+},
+{
+    "model": "App.taskcomment",
+    "pk": 1,
+    "fields": {
+        "task": 1,
+        "author": 7,
+        "text": "Need some help?"
+    }
+},
+{
+    "model": "App.taskcomment",
+    "pk": 2,
+    "fields": {
+        "task": 2,
+        "author": 5,
+        "text": "\"Fly me to the moon\" (c)"
+    }
+},
+{
+    "model": "App.taskcomment",
+    "pk": 3,
+    "fields": {
+        "task": 2,
+        "author": 3,
+        "text": "Thriller... Im so scary about it!"
+    }
+},
+{
+    "model": "App.taskcomment",
+    "pk": 4,
+    "fields": {
+        "task": 3,
+        "author": 4,
+        "text": "Anybody, find me somebody to love!"
+    }
+}
+]
