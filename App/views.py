@@ -14,7 +14,7 @@ class UserUpdateAPIView(APIView):
     Getting and changing an authorized user.
     """
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, ]
     serializer_class = DjangoUserDetailSerializer
 
     def get(self, request):
@@ -36,7 +36,10 @@ class UsersList(APIView):
     List of all users
     """
 
-    permission_classes = (IsAuthenticated, IsAdminOrManager)
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
 
     def get(self, request):
         result = CustomUser.objects.all()
@@ -50,9 +53,10 @@ class ChangeUserTeam(APIView):
     Add and delete members to the team
     """
 
-    permission_classes = (IsAuthenticated,
-                          IsAdminOrManager
-                          )
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
     serializer_class = DjangoUsersTeamSerializer
 
     def get(self, request, pk):
@@ -81,7 +85,7 @@ class TaskModelViewSet(ModelViewSet):
     permission_classes = [
         IsAuthenticated,
         IsAdminOrManagerOrReadOnly,
-        ]
+    ]
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     filterset_fields = [
@@ -116,16 +120,24 @@ class TeamView(ModelViewSet):
     Full CRUD on teams for admin
     """
 
-    permission_classes = (IsAuthenticated, IsAdmin)
+    permission_classes = [
+        IsAuthenticated,
+        IsAdmin
+    ]
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
 
 
 class TaskCommentView(ModelViewSet):
+    permission_classes = [IsAuthenticated, ]
     serializer_class = TaskCommentSerializer
     queryset = TaskComment.objects.all()
 
 
 class TaskImageView(ModelViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
     serializer_class = TaskImageSerializer
     queryset = TaskImage.objects.all()
