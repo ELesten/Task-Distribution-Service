@@ -80,7 +80,7 @@ class ChangeUserTeam(APIView):
 
 class TaskModelViewSet(ModelViewSet):
     """
-    Full CRUD on tasks
+    CRUD for tasks with automatic filtering by role
     """
     permission_classes = [
         IsAuthenticated,
@@ -117,7 +117,7 @@ class TaskModelViewSet(ModelViewSet):
 
 class TeamView(ModelViewSet):
     """
-    Full CRUD on teams for admin
+    CRUD on teams for the admin without restriction
     """
 
     permission_classes = [
@@ -129,12 +129,15 @@ class TeamView(ModelViewSet):
 
 
 class TaskCommentView(ModelViewSet):
+    """
+    CRUD for comments.
+    Only the admin/author has the ability to delete/modify.
+    """
     permission_classes = [IsAuthenticated, ]
     serializer_class = TaskCommentSerializer
     queryset = TaskComment.objects.all()
 
     def destroy(self, request, *args, **kwargs):
-        author = request.user.username
         instance = self.get_object()
         if instance.author.username != request.user.username and request.user.role != "Admin":
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -159,6 +162,9 @@ class TaskCommentView(ModelViewSet):
 
 
 class TaskImageView(ModelViewSet):
+    """
+    CRUD for Task image
+    """
     permission_classes = [
         IsAuthenticated,
         IsAdminOrManager,
