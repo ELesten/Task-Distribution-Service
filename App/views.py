@@ -14,7 +14,7 @@ class UserUpdateAPIView(APIView):
     Getting and changing an authorized user.
     """
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, ]
     serializer_class = DjangoUserDetailSerializer
 
     def get(self, request):
@@ -36,7 +36,10 @@ class UsersList(APIView):
     List of all users
     """
 
-    permission_classes = (IsAuthenticated, IsAdminOrManager)
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
 
     def get(self, request):
         result = CustomUser.objects.all()
@@ -50,9 +53,10 @@ class ChangeUserTeam(APIView):
     Add and delete members to the team
     """
 
-    permission_classes = (IsAuthenticated,
-                          IsAdminOrManager
-                          )
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
     serializer_class = DjangoUsersTeamSerializer
 
     def get(self, request, pk):
@@ -76,12 +80,12 @@ class ChangeUserTeam(APIView):
 
 class TaskModelViewSet(ModelViewSet):
     """
-    Full CRUD on tasks
+    CRUD for tasks with automatic filtering by role
     """
     permission_classes = [
         IsAuthenticated,
         IsAdminOrManagerOrReadOnly,
-        ]
+    ]
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     filterset_fields = [
@@ -113,19 +117,57 @@ class TaskModelViewSet(ModelViewSet):
 
 class TeamView(ModelViewSet):
     """
-    Full CRUD on teams for admin
+    CRUD on teams for the admin without restriction
     """
 
-    permission_classes = (IsAuthenticated, IsAdmin)
+    permission_classes = [
+        IsAuthenticated,
+        IsAdmin
+    ]
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
 
 
 class TaskCommentView(ModelViewSet):
+    """
+    CRUD for comments.
+    Only the admin/author has the ability to delete/modify.
+    """
+    permission_classes = [IsAuthenticated, ]
     serializer_class = TaskCommentSerializer
     queryset = TaskComment.objects.all()
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.author.username != request.user.username and request.user.role != "Admin":
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        if instance.author.username != request.user.username and request.user.role != "Admin":
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TaskImageView(ModelViewSet):
+    """
+    CRUD for Task image
+    """
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminOrManager,
+    ]
     serializer_class = TaskImageSerializer
     queryset = TaskImage.objects.all()
