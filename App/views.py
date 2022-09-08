@@ -133,6 +133,30 @@ class TaskCommentView(ModelViewSet):
     serializer_class = TaskCommentSerializer
     queryset = TaskComment.objects.all()
 
+    def destroy(self, request, *args, **kwargs):
+        author = request.user.username
+        instance = self.get_object()
+        if instance.author.username != request.user.username and request.user.role != "Admin":
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        if instance.author.username != request.user.username and request.user.role != "Admin":
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TaskImageView(ModelViewSet):
     permission_classes = [
